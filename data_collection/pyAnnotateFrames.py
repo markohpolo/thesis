@@ -27,9 +27,9 @@ def run_worker(frame_file):
     top_y, bottom_y = get_coordinates(original_image, image_width // 2, image_width)
     left_x, right_x =  get_coordinates(rotate_1, image_length // 2, image_length)
 
-    with open("annotations/" + frame_file.replace("png", "txt"), 'w') as f:
-    #with open(frame_file.replace("png", "txt"), 'w') as f:
-        f.write(normalize_frames(left_x, right_x, top_y, bottom_y, image_width, image_length))
+    # with open("annotations/" + frame_file.replace("png", "txt"), 'w') as f:
+    # #with open(frame_file.replace("png", "txt"), 'w') as f:
+    #     f.write(normalize_frames(left_x, right_x, top_y, bottom_y, image_width, image_length))
 
     return left_x, right_x, top_y, bottom_y
 
@@ -76,16 +76,16 @@ def get_coordinates(image, center, bottom_limit):
 if __name__ == "__main__":
     _, _, frame_files = next(walk("./frames/{}".format(OBJECT)), (None, None, []))
     # scan frames
-    with concurrent.futures.ProcessPoolExecutor(max_workers=NUM_WORKERS) as executor:
-        for left_x, right_x, top_y, bottom_y in tqdm.tqdm(executor.map(run_worker, frame_files), "Drawing boxes for {}".format(OBJECT), total=len(frame_files)):
-            continue
+    # with concurrent.futures.ProcessPoolExecutor(max_workers=NUM_WORKERS) as executor:
+    #     for left_x, right_x, top_y, bottom_y in tqdm.tqdm(executor.map(run_worker, frame_files), "Drawing boxes for {}".format(OBJECT), total=len(frame_files)):
+    #         continue
             
     # sanity check code
-    # for frame_file in frame_files:
-    #     if frame_file != "vayne_run2000.png":
-    #         continue
-    #     original_image = cv2.imread("frames/{}/{}".format(OBJECT, frame_file))
-    #     left_x, right_x, top_y, bottom_y = run_worker(frame_file)
-    #     image_with_box = cv2.rectangle(original_image, (left_x, top_y), (right_x, bottom_y), (255, 0, 0), 2)
-    #     cv2.imwrite("{}_boxed.png".format(OBJECT), image_with_box)
-    #     print(left_x, right_x, top_y, bottom_y)
+    for frame_file in frame_files:
+        if frame_file != "vayne_run2000.png":
+            continue
+        original_image = cv2.imread("frames/{}/{}".format(OBJECT, frame_file))
+        left_x, right_x, top_y, bottom_y = run_worker(frame_file)
+        image_with_box = cv2.rectangle(original_image, (left_x, top_y), (right_x, bottom_y), (255, 0, 0), 2)
+        cv2.imwrite("{}_boxed.png".format(OBJECT), image_with_box)
+        print(left_x, right_x, top_y, bottom_y)
